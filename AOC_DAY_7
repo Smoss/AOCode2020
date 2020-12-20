@@ -1,0 +1,50 @@
+from collections import defaultdict
+import string
+input_file = open('Inputs/Input_7.txt', 'r')
+rules = {}
+for line in input_file:
+    line = line.strip('\n')
+    if not line:
+        continue
+    # print(line)
+    color, bags = line.split(' contain ')
+    rules[color] = bags.strip('.').split(', ')
+# print(rules)
+con_bags = set()
+for color, bags in rules.items():
+    for bag in bags:
+        if bag.strip('s').endswith('shiny gold bag'):
+            con_bags.add(color.strip('s'))
+next_bags = con_bags
+while next_bags:
+    # print(next_bags)
+    curr_bags = {bag for bag in next_bags}
+    next_bags = set()
+    for color, bags in rules.items():
+        if color in con_bags:
+            continue
+        for bag in bags:
+            for con_bag in curr_bags:
+                # print(color)
+                if bag.strip('s').endswith(con_bag):
+                    con_bags.add(color.strip('s'))
+                    next_bags.add(color.strip('s'))
+print(len(con_bags))
+
+bag_count = 0
+next_rules = rules['shiny gold bags']
+# print(next_rules)
+while next_rules:
+    curr_rules = [rule for rule in next_rules]
+    next_rules = []
+    for rule in curr_rules:
+        count, *color = rule.strip('s').split(' ')
+        count = int(count)
+        color = ' '.join((color)) + 's'
+        bag_count += count
+        next_rule = rules[color]
+        if not next_rule[0].startswith('no'):
+            for i in range(count):
+                next_rules += next_rule
+
+print(bag_count)
